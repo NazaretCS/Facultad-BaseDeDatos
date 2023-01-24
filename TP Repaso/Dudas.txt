@@ -1,0 +1,147 @@
+Si me dan varios apartados asi descriviendome las restricciones, estaria mal poner mas restricciones de las que me piden.??
+
+
+d) Sugiera un orden de creación y llenado de las tablas. Justifique su respuesta.
+
+
+
+i) Que el dni de un ALUMNO, ni el cuil de un profesor se repita.
+Seria tildar la unicidad.??
+
+
+
+ii) Que la fecha de las INSCRIPCION no sea anterior a la fecha actual.
+
+
+
+vii. Muestre el nombre, categoría, precio y proveedor de los productos que fueron pedidos por todos los clientes. 
+     (Debe mostrar la categoría y el proveedor, no los id de los mismos)
+        
+
+
+-- MySQL Workbench Synchronization
+-- Generated: 2022-11-29 17:40
+-- Model: New Model
+-- Version: 1.0
+-- Project: Name of the project
+-- Author: nazar
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`persona` (
+  `id_persona` INT(11) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_persona`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`duenio` (
+  `id_duenio` INT(11) NOT NULL,
+  `domicilio` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id_duenio`),
+  CONSTRAINT `fk_duenio_persona1`
+    FOREIGN KEY (`id_duenio`)
+    REFERENCES `esquemaparcial`.`persona` (`id_persona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`veterinario` (
+  `id_veterinario` INT(11) NOT NULL,
+  `especialidad` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id_veterinario`),
+  CONSTRAINT `fk_veterinario_persona`
+    FOREIGN KEY (`id_veterinario`)
+    REFERENCES `esquemaparcial`.`persona` (`id_persona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`mascota` (
+  `id_mascota` INT(11) NOT NULL,
+  `mascota` VARCHAR(40) NOT NULL,
+  `edad` INT(11) NOT NULL,
+  `id_duenio` INT(11) NOT NULL,
+  `id_raza` INT(11) NOT NULL,
+  PRIMARY KEY (`id_mascota`),
+  INDEX `fk_mascota_raza1_idx` (`id_raza` ASC) VISIBLE,
+  INDEX `fk_mascota_duenio1_idx` (`id_duenio` ASC) VISIBLE,
+  CONSTRAINT `fk_mascota_raza1`
+    FOREIGN KEY (`id_raza`)
+    REFERENCES `esquemaparcial`.`raza` (`id_raza`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_mascota_duenio1`
+    FOREIGN KEY (`id_duenio`)
+    REFERENCES `esquemaparcial`.`duenio` (`id_duenio`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`raza` (
+  `id_raza` INT(11) NOT NULL,
+  `raza` VARCHAR(50) NOT NULL,
+  `caracteristicas` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id_raza`),
+  UNIQUE INDEX `raza_UNIQUE` (`raza` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`consulta` (
+  `fecha` DATE NOT NULL,
+  `id_veterinario` INT(11) NOT NULL,
+  `id_mascota` INT(11) NOT NULL,
+  `pagado` INT(11) NOT NULL,
+  `id_tratamiento` INT(11) NOT NULL,
+  `id_diagnostico` INT(11) NOT NULL,
+  PRIMARY KEY (`fecha`, `id_veterinario`, `id_mascota`),
+  INDEX `fk_consulta_veterinario1_idx` (`id_veterinario` ASC) VISIBLE,
+  INDEX `fk_consulta_mascota1_idx` (`id_mascota` ASC) VISIBLE,
+  INDEX `fk_consulta_tratamiento1_idx` (`id_tratamiento` ASC) VISIBLE,
+  INDEX `fk_consulta_diagnostico1_idx` (`id_diagnostico` ASC) VISIBLE,
+  CONSTRAINT `fk_consulta_veterinario1`
+    FOREIGN KEY (`id_veterinario`)
+    REFERENCES `esquemaparcial`.`veterinario` (`id_veterinario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_consulta_mascota1`
+    FOREIGN KEY (`id_mascota`)
+    REFERENCES `esquemaparcial`.`mascota` (`id_mascota`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_consulta_tratamiento1`
+    FOREIGN KEY (`id_tratamiento`)
+    REFERENCES `esquemaparcial`.`tratamiento` (`id_tratamiento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_consulta_diagnostico1`
+    FOREIGN KEY (`id_diagnostico`)
+    REFERENCES `esquemaparcial`.`diagnostico` (`id_diagnostico`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`tratamiento` (
+  `id_tratamiento` INT(11) NOT NULL,
+  `tratamiento` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_tratamiento`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `esquemaparcial`.`diagnostico` (
+  `id_diagnostico` INT(11) NOT NULL,
+  `diagnostico` VARCHAR(40) NOT NULL,
+  PRIMARY KEY (`id_diagnostico`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
